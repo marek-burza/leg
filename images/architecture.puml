@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+skinparam componentStyle rectangle
+skinparam defaultFontName Helvetica
+skinparam ArrowColor #444444
+skinparam rectangle {
+  BackgroundColor<<input>> #FFF7E0
+  BackgroundColor<<tool>> #E8F1FB
+}
+
+rectangle "10 CD zips\nDICOM: CT, CR/DX radiographs" <<input>> as zips
+rectangle "implants.yaml\nnail and screw sizes, sources" <<input>> as implants
+rectangle "anatomy.yaml\nHU thresholds, capsule heights, citations" <<input>> as anatomy
+rectangle "annotations.yaml\nhand-placed points" <<input>> as ann
+rectangle "annotate\nlocal web tool :8001" <<tool>> as annotate
+rectangle "check\nleave-one-out registration" <<tool>> as check
+rectangle "serve :8000\nmodel-viewer page" <<tool>> as serve
+
+package "tibia3d pipeline (Python 3.13, uv-locked)" {
+  rectangle "ingest\npydicom, SimpleITK\nCT volumes, radiographs, catalogue" as ingest
+  rectangle "segment\nTotalSegmentator, HU thresholds\nbones, nail, interlocking screws" as segment
+  rectangle "register\nPyTorch DRR, gradient correlation\nX-ray camera per radiograph, nail bend" as register
+  rectangle "mesh\nscikit-image marching cubes, trimesh" as mesh
+  rectangle "screws\nSciPy bundle adjustment\nlag and knee screws" as screws
+  rectangle "measure\nMonte Carlo: lag screw\nto articular surface" as measure
+  rectangle "export\ntrimesh: one GLB per time point" as export
+}
+
+zips --> ingest
+ingest --> segment
+implants --> segment
+anatomy --> segment
+anatomy --> measure
+segment --> register
+register --> mesh
+mesh --> screws
+screws --> measure
+measure --> export
+export --> serve
+
+annotate --> ann
+ann --> register
+ann --> screws
+register ..> annotate : prefill
+register ..> check
+@enduml

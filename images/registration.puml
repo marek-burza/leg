@@ -1,0 +1,15 @@
+@startuml
+title Per radiograph: registration, then triangulation of the screws not in the CT
+start
+:Find exposed field (convex hull of textured region),\nreplace white collimation frame with field median;
+:Detect nail in 2D (paired edges 9-14 mm apart,\nbright between them, robust line fit);
+:Coarse search: lock projected nail axis on the line,\nrotation about nail +/-60 deg, lean, magnification, slide;
+:Refine 5 candidates (Powell) at 4, 2, 1 mm pixels\nscore = gradient correlation of DRR vs radiograph\n+ penalty to annotated hints;
+:Pass 2 with nail bend re-estimated from annotated bend marks;
+note right: Camera per radiograph in CT frame
+:Bundle adjustment over all radiographs:\nlag screw heads/tips + small per-image camera corrections;
+:Anatomy constraint: head 1.5 mm outside tibial cortex,\ntip at most 3 mm beyond posterior cortex;
+:Leave-one-date-out jackknife for error bars;
+:Monte Carlo (400 samples) distance\nscrew surface to plafond articular surface;
+stop
+@enduml
