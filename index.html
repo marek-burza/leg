@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Lower leg model</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js" integrity="sha384-wjsPzEO+lXOf7d9csIDfAQpPt2OKuUU3m0K9qsdKIuzX4N8czSF6hdh23eAbZa3p" crossorigin="anonymous"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #111418; font: 14px system-ui, sans-serif; }
+  model-viewer { width: 100%; height: 100%; --poster-color: transparent; }
+  .time { position: fixed; top: 12px; left: 16px; right: 16px; z-index: 1; color: #e6e6e6; text-align: center; text-shadow: 0 1px 3px #000; pointer-events: none; }
+  .time input { width: 100%; margin: 0; pointer-events: auto; }
+  .time div { margin-top: 4px; }
+</style>
+</head>
+<body>
+<div class="time">
+  <input type="range" min="0" max="27" value="1" oninput="show(this.value)"/>
+  <div id="label">2022-03-24 09:09, front view</div>
+</div>
+<model-viewer src="data/2022-03-24_090922_ap.glb" camera-controls camera-target="0.0508m 0.2419m 0.0419m" camera-orbit="-11.36deg 89.82deg 1.0346m" field-of-view="26.69deg" min-field-of-view="5deg" max-camera-orbit="auto auto 5m" environment-image="neutral" interaction-prompt="none" onload="applyView(this)" alt="Lower leg model"></model-viewer>
+<script>
+const TIMES = [["data/ct.glb", "2022-03-22 CT, before the revision", null], ["data/2022-03-24_090922_ap.glb", "2022-03-24 09:09, front view", {"target": "0.0508m 0.2419m 0.0419m", "orbit": "-11.36deg 89.82deg 1.0346m", "fov": "26.69deg"}], ["data/2022-03-24_091258_lat.glb", "2022-03-24 09:12, side view", {"target": "0.0414m 0.2236m 0.0163m", "orbit": "-85.69deg 84.32deg 1.0555m", "fov": "27.92deg"}], ["data/2022-04-22_084329_ap.glb", "2022-04-22 08:43, front view", {"target": "0.0380m 0.3249m 0.0428m", "orbit": "-12.85deg 90.87deg 0.9376m", "fov": "21.49deg"}], ["data/2022-04-22_084500_ap.glb", "2022-04-22 08:45, front view", {"target": "0.0400m 0.1406m 0.0351m", "orbit": "-13.69deg 88.19deg 0.9382m", "fov": "21.10deg"}], ["data/2022-04-22_084651_lat.glb", "2022-04-22 08:46, side view", {"target": "0.0277m 0.3364m 0.0100m", "orbit": "-59.69deg 93.09deg 0.9810m", "fov": "21.56deg"}], ["data/2022-04-22_084803_lat.glb", "2022-04-22 08:48, side view", {"target": "0.0351m 0.1102m 0.0119m", "orbit": "-84.27deg 82.73deg 0.9592m", "fov": "21.13deg"}], ["data/2022-05-13_133714_ap.glb", "2022-05-13 13:37, front view", {"target": "0.0502m 0.2161m 0.0405m", "orbit": "-10.47deg 87.61deg 1.0218m", "fov": "25.55deg"}], ["data/2022-05-13_133804_lat.glb", "2022-05-13 13:38, side view", {"target": "0.0374m 0.1817m 0.0318m", "orbit": "-57.80deg 96.80deg 1.0334m", "fov": "25.11deg"}], ["data/2022-06-27_102335_ap.glb", "2022-06-27 10:23, front view", {"target": "0.0401m 0.3308m 0.0439m", "orbit": "-11.13deg 92.04deg 0.9587m", "fov": "20.07deg"}], ["data/2022-06-27_102456_ap.glb", "2022-06-27 10:24, front view", {"target": "0.0423m 0.1582m 0.0368m", "orbit": "-20.83deg 84.14deg 0.9297m", "fov": "18.91deg"}], ["data/2022-06-27_102651_lat.glb", "2022-06-27 10:26, side view", {"target": "0.0259m 0.3372m 0.0164m", "orbit": "-51.51deg 83.79deg 0.9407m", "fov": "18.91deg"}], ["data/2022-06-27_102735_lat.glb", "2022-06-27 10:27, side view", {"target": "0.0290m 0.1555m -0.0026m", "orbit": "-74.43deg 83.72deg 0.9609m", "fov": "18.96deg"}], ["data/2022-08-05_081415_ap.glb", "2022-08-05 08:14, front view", {"target": "0.0278m 0.3526m 0.0415m", "orbit": "-13.60deg 94.71deg 0.9799m", "fov": "20.58deg"}], ["data/2022-08-05_081505_ap.glb", "2022-08-05 08:15, front view", {"target": "0.0359m 0.1199m 0.0328m", "orbit": "-25.44deg 83.28deg 0.9428m", "fov": "20.23deg"}], ["data/2022-08-05_081620_lat.glb", "2022-08-05 08:16, side view", {"target": "0.0254m 0.3281m 0.0165m", "orbit": "-50.73deg 81.51deg 1.0131m", "fov": "20.33deg"}], ["data/2022-08-05_081718_lat.glb", "2022-08-05 08:17, side view", {"target": "0.0306m 0.1391m 0.0182m", "orbit": "-63.79deg 86.21deg 0.9435m", "fov": "20.30deg"}], ["data/2022-11-10_084052_ap.glb", "2022-11-10 08:40, front view", {"target": "0.0513m 0.1950m 0.0390m", "orbit": "-6.47deg 86.45deg 0.9441m", "fov": "21.62deg"}], ["data/2022-11-10_084754_lat.glb", "2022-11-10 08:47, side view", {"target": "0.0254m 0.2004m 0.0093m", "orbit": "-61.02deg 97.03deg 0.9503m", "fov": "21.49deg"}], ["data/2022-11-10_084954_ap.glb", "2022-11-10 08:49, front view", {"target": "0.0418m 0.2102m 0.0387m", "orbit": "-7.11deg 87.05deg 0.9439m", "fov": "21.56deg"}], ["data/2023-02-14_081412_ap.glb", "2023-02-14 08:14, front view", {"target": "0.0387m 0.3466m 0.0442m", "orbit": "-11.52deg 92.60deg 0.9176m", "fov": "18.88deg"}], ["data/2023-02-14_081550_ap.glb", "2023-02-14 08:15, front view", {"target": "0.0320m 0.0943m 0.0313m", "orbit": "-10.55deg 85.24deg 0.9147m", "fov": "19.41deg"}], ["data/2023-02-14_081653_lat.glb", "2023-02-14 08:16, side view", {"target": "0.0235m 0.3303m 0.0178m", "orbit": "-47.23deg 80.82deg 1.0142m", "fov": "18.76deg"}], ["data/2023-02-14_081733_lat.glb", "2023-02-14 08:17, side view", {"target": "0.0252m 0.1168m 0.0140m", "orbit": "-57.79deg 90.94deg 0.9197m", "fov": "18.86deg"}], ["data/2024-02-20_091403_ap.glb", "2024-02-20 09:14, front view", {"target": "0.0456m 0.3447m 0.0455m", "orbit": "-12.27deg 92.55deg 0.9252m", "fov": "18.34deg"}], ["data/2024-02-20_091538_ap.glb", "2024-02-20 09:15, front view", {"target": "0.0413m 0.1315m 0.0351m", "orbit": "-13.89deg 84.12deg 0.9063m", "fov": "19.44deg"}], ["data/2024-02-20_091638_lat.glb", "2024-02-20 09:16, side view", {"target": "0.0275m 0.3383m 0.0166m", "orbit": "-53.53deg 85.94deg 0.9470m", "fov": "19.98deg"}], ["data/2024-02-20_091723_lat.glb", "2024-02-20 09:17, side view", {"target": "0.0300m 0.1436m 0.0183m", "orbit": "-62.39deg 93.41deg 0.8964m", "fov": "18.98deg"}]];
+let current = TIMES[1];
+function show(index) {
+  current = TIMES[index];
+  document.querySelector('model-viewer').src = current[0];
+  document.getElementById('label').textContent = current[1];
+}
+function applyView(viewer) {
+  const view = current[2];
+  viewer.cameraTarget = view ? view.target : 'auto auto auto';
+  viewer.cameraOrbit = view ? view.orbit : '0deg 75deg 105%';
+  viewer.fieldOfView = view ? view.fov : 'auto';
+  viewer.jumpCameraToGoal();
+}
+</script>
+</body>
+</html>
