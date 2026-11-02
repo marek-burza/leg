@@ -2,12 +2,12 @@
 
 ## TL;DR
 
-- I had ten CDs of a fractured tibia and fibula (pictured below, left) covering two years of follow-up. They held radiographs that I could only view as flat 2D images, like the lateral view next to them, and a CT that the bundled CD viewer could not show as a 3D model.
+- Ten CDs documenting a fractured tibia and fibula (pictured below, left) covered two years of follow-up. They held radiographs that could only be viewed as flat 2D images, like the lateral view next to them, and a CT that the bundled CD viewer could not show as a 3D model.
 - There were two operations. The first implanted an intramedullary tibial nail. During the operation, the posterior malleolus (the back edge of the distal tibia, the "Volkmann fragment") broke off, and a second operation the next day fixed it with two percutaneous lag screws.
 - The CD set includes one CT, which carries far more 3D information than any radiograph. It was taken between the two operations, so it shows the nail and its interlocking screws but **not the two lag screws**.
 - The lag screws are the implants closest to the ankle joint's articular surface. A screw that enters the joint space can damage the cartilage.
 - If a problem ever came up, a doctor would need an MRI to judge how close the lag screws are to the joint surface, for example to decide whether to remove them. This is purely hypothetical. I was curious how far Claude Code could get at reconstructing the tissues and implants in 3D, at placing the lag screws relative to the CT by registration, and at measuring their distance to the joint surface with honest error bars.
-- It worked - [view the 3D models here](https://marek-burza.github.io/leg/). The lag screws were triangulated from 27 post-operative radiographs, with each screw end located to within about 1.6 to 1.9 mm. Their closest distances to the tibial plafond's articular surface came out at **9.1 mm [7.7, 10.5]** and **5.8 mm [4.3, 7.2]** (median [5th, 95th percentile]). Neither screw reaches the joint. The Claude Code cost came to about 2.5 EUR.
+- It worked: [view the 3D models here](https://marek-burza.github.io/leg/). The lag screws were triangulated from 27 post-operative radiographs, with each screw end located to within about 1.6 to 1.9 mm. Their closest distances to the tibial plafond's articular surface came out at **9.1 mm [7.7, 10.5]** and **5.8 mm [4.3, 7.2]** (median [5th, 95th percentile]). Neither screw reaches the joint. The Claude Code cost came to about 2.5 EUR.
 
 ![From ten CDs of 2D radiographs and a CT to a 3D model of the leg registered to each radiograph, with the lag screw clearances to the ankle joint surface](images/ai.webp)
 
@@ -32,7 +32,7 @@ The question I cared about is the distance from each lag screw to the **articula
 
 ## What I learned along the way
 
-Halfway through, I asked the questions any patient would ask: would a specialist recommend removing the implants, and is the joint at risk? The answer, framed explicitly as background for a conversation with a surgeon rather than advice, taught me a few things:
+Halfway through, I asked the obvious clinical questions: would a specialist recommend removing the implants, and is the joint at risk? The answer, framed explicitly as background for a conversation with a surgeon rather than advice, taught me a few things:
 
 - **Routine removal** of nails and screws in adults without symptoms is generally not recommended in the orthopaedic literature. Removal carries its own risks: infection, nerve injury and refracture. It is considered for specific reasons, such as pain or irritation over a prominent screw head or tip, infection, a broken or loosening implant, or the patient's wish once the bone has healed.
 - **Intra-articular screw placement** is the classic danger to cartilage, and it is not the case here: neither lag screw reaches the articular surface (9.1 and 5.8 mm, see *Results*).
@@ -83,10 +83,10 @@ What was picked, and why:
 
 - **Stages with atomic outputs.** Each stage writes to `build/.<stage>.tmp/` and is renamed to `build/<stage>/` only on success, so a crash never leaves half-written results. Stages are skipped when their output exists; `--force` and `all --from <stage>` rebuild selectively.
 - **One entry point**: `tibia3d all | <stage> | serve | annotate | check`.
-- **Everything derivable from the zipped CDs plus committed configuration.** `config/implants.yaml` holds the implant dimensions, each with its source. `config/anatomy.yaml` holds Hounsfield unit thresholds and capsule heights, each with its citation. `config/annotations.yaml` holds the hand marks. A newcomer's instructions are literally `uv sync --frozen`, set the `TotalSegmentatior` licence, `uv run tibia3d all`.
-- **No comments in the code.** The explanations live in the project README, stage by stage: the method, the reason, the numbers and the rejected alternatives. The code is small, with clearly named functions, so it can be audited.
+- **Everything derivable from the zipped CDs plus committed configuration.** `config/implants.yaml` holds the implant dimensions, each with its source. `config/anatomy.yaml` holds Hounsfield unit thresholds and capsule heights, each with its citation. `config/annotations.yaml` holds the hand marks. A newcomer's instructions are literally `uv sync --frozen`, set the `TotalSegmentator` licence, `uv run tibia3d all`.
+- **No comments in the code.** The explanations live in the pipeline's README, stage by stage: the method, the reason, the numbers and the rejected alternatives. The code is small, with clearly named functions, so it can be audited.
 - **Local only.** The servers bind to `127.0.0.1`; nothing is published.
-- **A project README written so development can resume later**: known limitations, open problems, rejected experiments with their numbers, and how each was tested.
+- **A pipeline README written so development can resume later**: known limitations, open problems, rejected experiments with their numbers, and how each was tested.
 
 ## Architecture
 
@@ -102,7 +102,7 @@ What was picked, and why:
 
 I asked for a layered, automated verification and validation testing scheme. Many of its parts mirror what medical device software practice (IEC 62304, ISO 14971 risk thinking, the FDA's guidance on software validation) asks for, even though this is a personal project and not a medical device:
 
-- **Intended use and limitations stated up front.** The README opens with "not a medical assessment" and keeps a section of known limitations: the knee screw tips are not determined, the CT predates the revision, the foot poses are unstable, and healing is not modelled.
+- **Intended use and limitations stated up front.** This write-up opens with a disclaimer (not a medical assessment) and lists its known limitations after the results: the knee screw tips are not determined, the CT predates the revision, the foot poses are unstable, and healing is not modelled.
 - **Verification against known answers.**
   - Synthetic round trips: a phantom tibia with a hollow nail and screws is projected at a known camera pose, and registration must recover that pose.
   - Property-based tests (`hypothesis`) for the projection geometry: points project consistently, and detector corners map to image corners.
@@ -184,6 +184,16 @@ The interesting part of the session was the route, not the destination.
 | Claude Code cost | about 2.5 EUR |
 
 The viewer shows each time point from its X-ray source, with the radiograph semi-transparent behind the model, so the reconstruction can be judged visually against the image it came from. Drag away from the source view and the leg turns in 3D, showing the nail, the screws, the bones, the joint surfaces in blue and the clearances in magenta.
+
+## Known limitations
+
+- **The registration depends on the hand annotations.** Re-registered without their own annotations, most images landed within 1 to 2 mm of their marks, but several lateral views failed badly (up to 129 mm off) with no warning from the image score.
+- **The camera's rotation about the nail is the least determined direction**, above all in the lateral views. The side-view corrections of up to 41° rest on the anatomy alone.
+- **The lag screw lengths depend on what is trusted.** They come out at 39.1 and 40.9 mm when the anatomy is trusted, and at 43 to 44 mm when the paired exposures are trusted. The stated errors of about 2 mm per screw end do not include this spread.
+- **The knee screw tips are not determined** (about 10 mm uncertainty); only their heads are measured.
+- **The CT predates the second operation**, so the posterior (Volkmann) fragment is shown displaced, and the limit on how far a lag screw tip may stand beyond the bone is only an upper bound.
+- **The fitted foot poses are unstable.** They only place the foot in the viewer and are not used as evidence about the cameras.
+- **Healing is not modelled.** Bone shapes are always those of the CT; healing shows only as a mismatch with the radiograph overlay.
 
 ## Takeaways
 
